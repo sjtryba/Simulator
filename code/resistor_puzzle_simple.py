@@ -47,7 +47,10 @@ def load_combinations():
     return equivalent_impedance
 
 
-def main():
+def master_alarm_puzzle():
+    # Trigger the master alarm
+    master_alarm = True
+
     # Generate the display objects
     goal_display = seven_segment_i2c.SevenSegmentDisplay(address=0x71)
     actual_display = seven_segment_i2c.SevenSegmentDisplay(address=0x72)
@@ -73,7 +76,7 @@ def main():
     # Display the goal impedance of the circuit
     goal_display.write_int(goal)
 
-    while True:  # actual != goal:
+    while master_alarm is True:
         # Read all the switches.
         switch_states = [0] * len(switches)
         resistance = [0, 0, 0]
@@ -103,6 +106,10 @@ def main():
         parallel_group_display1.write_int(resistance[1])
         parallel_group_display2.write_int(resistance[2])
         actual_display.write_int(actual)
+
+        # Check to see if we have solved the puzzle
+        if actual == goal:
+            master_alarm = False
 
         # Delay for a small amount of time
         time.sleep(0.25)
