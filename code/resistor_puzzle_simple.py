@@ -38,7 +38,7 @@ def load_combinations():
     for i in range(number_of_resistors):  # Fill in the list containing all the combinations of the resistors indices
         resistor_combinations.extend(combinations(RESISTOR_VALUES, i + 1))
 
-    equivalent_impedance = [0 for x in range(len(resistor_combinations))]  # Equivalent impedance of the entire circuit
+    equivalent_impedance = [0 for i in range(len(resistor_combinations))]  # Equivalent impedance of the entire circuit
 
     for i in range(len(resistor_combinations)):
         equivalent_impedance[i] = sum(resistor_combinations[i])  # Sum the parallel impedance
@@ -64,38 +64,47 @@ def main():
     for i in range(len(switches)):
         switches[i].setup(pins[i], GPIO.IN)
 
+    # Set the goal impedance of the circuit
     goal = set_goal(load_combinations())
-    # print(goal)
+
+    # Set a fake actual resistance to get the while loop started
+    # actual = 0
+
+    # Display the goal impedance of the circuit
     goal_display.write_int(goal)
 
-    while True:
+    while True:  # actual != goal:
         # Read all the switches.
         switch_states = [0] * len(switches)
         resistance = [0, 0, 0]
         for i in range(len(switches)):
-            # Read the specified ADC channel using the previously set gain value.
             switch_states[i] = switches[i].input(pins[i])
 
+        # Calculate the resistance of the display groups
         for i in range(0, 3):
             if switch_states[i]:
-                resistance[0] += RESISTOR_VALUES[i]  # calculate the resistance of the first group
+                resistance[0] += RESISTOR_VALUES[i]  # Calculate the resistance of the first group
         for i in range(3, 6):
             if switch_states[i]:
-                resistance[1] += RESISTOR_VALUES[i]  # calculate the resistance of the second group
+                resistance[1] += RESISTOR_VALUES[i]  # Calculate the resistance of the second group
         for i in range(6, 9):
             if switch_states[i]:
-                resistance[2] += RESISTOR_VALUES[i]  # calculate the resistance of the third group
+                resistance[2] += RESISTOR_VALUES[i]  # Calculate the resistance of the third group
 
-        # Display the resistance values
+        # I'm not sure what this does, I can't remember why I added it. I think it was because the 'resistance' array
+        # was not appending properly, although I can't see how this would fix that...
         for i in range(len(resistance)):
             resistance[i] = resistance[i]
-        # print(resistance)
-        # print(sum(resistance))
+
+        actual = sum(resistance)
+
+        # Display the resistance values
         parallel_group_display0.write_int(resistance[0])
         parallel_group_display1.write_int(resistance[1])
         parallel_group_display2.write_int(resistance[2])
-        actual_display.write_int(sum(resistance))
+        actual_display.write_int(actual)
 
+        # Delay for a small amount of time
         time.sleep(0.25)
 
 if __name__ == '__main__':
