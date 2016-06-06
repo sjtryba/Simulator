@@ -1,15 +1,20 @@
-value = 1234567
+import pygame
 
-value_array = [int(i) for i in str(value)]
 
-# Separate the last four digits from the rest of the array
-right_values = value_array[-4:]
-left_values = value_array[:(len(value_array) - 4)]
+pygame.init()
+screen = pygame.display.set_mode((900, 600))
+done = False
 
-# Convert the arrays into integers
-right_values = int(''.join(map(str, right_values)))
-left_values = int(''.join(map(str, left_values)))
+clock = pygame.time.Clock()
 
-print(value_array)
-print("Right: ", right_values)
-print("Left: ", left_values)
+master_alarm = pygame.mixer.Sound('stage_1_ignition.ogg')
+#master_alarm = pygame.mixer.Sound('alarm_master.ogg')
+
+while not done:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            master_alarm.play()
+
+    pygame.display.flip()
