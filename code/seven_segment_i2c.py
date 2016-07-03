@@ -1,4 +1,5 @@
-from Adafruit_I2C import Adafruit_I2C
+import Adafruit_GPIO.I2C as Adafruit_I2C
+#from Adafruit_I2C import Adafruit_I2C
 import time
 
 
@@ -40,7 +41,7 @@ class SevenSegmentDisplay:
         be an I2C bus that implements write_byte
         """
         self.address = address
-        self.bus = Adafruit_I2C(address, busnum=2)
+        self.bus = Adafruit_I2C.Device(address, busnum=2)
 
         # segment control registers for each digit
         # starting with the leftmost digit

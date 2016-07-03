@@ -3,7 +3,7 @@ import random
 import seven_segment_i2c
 import Adafruit_GPIO as GPIO
 import time
-
+import pygame
 
 # ------------------------------------CONSTANTS----------------------------------
 RESISTOR_VALUES = [10,   30,   50,
@@ -47,7 +47,12 @@ def load_combinations():
     return equivalent_impedance
 
 
-def master_alarm_puzzle():
+def main(): #master_alarm_puzzle():
+    pygame.init()
+    screen = pygame.display.set_mode((900, 600))
+
+    complete = pygame.mixer.Sound('thats-correct.ogg')
+
     # Trigger the master alarm
     master_alarm = True
 
@@ -77,6 +82,10 @@ def master_alarm_puzzle():
     goal_display.write_int(goal)
 
     while master_alarm is True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                master_alarm = True
+
         # Read all the switches.
         switch_states = [0] * len(switches)
         resistance = [0, 0, 0]
@@ -110,9 +119,37 @@ def master_alarm_puzzle():
         # Check to see if we have solved the puzzle
         if actual == goal:
             master_alarm = False
+            complete.play()
+
+            # Flash the 'goal' and 'actual' displays to show they match
+            for i in range(3):
+                goal_display.clear_display()
+                actual_display.clear_display()
+                parallel_group_display0.clear_display()
+                parallel_group_display1.clear_display()
+                parallel_group_display2.clear_display()
+
+                time.sleep(0.15)
+
+                goal_display.write_int(goal)
+                actual_display.write_int(actual)
+                parallel_group_display0.write_int(resistance[0])
+                parallel_group_display1.write_int(resistance[1])
+                parallel_group_display2.write_int(resistance[2])
+
+                time.sleep(0.50)
+
+            # Turn off all the displays when the puzzle is solved.
+            # I think we should play a sound to reinforce the success
+            goal_display.clear_display()
+            actual_display.clear_display()
+            parallel_group_display0.clear_display()
+            parallel_group_display1.clear_display()
+            parallel_group_display2.clear_display()
 
         # Delay for a small amount of time
         time.sleep(0.25)
+        pygame.display.flip()
 
 if __name__ == '__main__':
     main()
