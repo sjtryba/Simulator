@@ -42,12 +42,10 @@ def load_combinations():
 
     for i in range(len(resistor_combinations)):
         equivalent_impedance[i] = sum(resistor_combinations[i])  # Sum the parallel impedance
-    # equivalent_impedance = sorted(equivalent_impedance)
-    # print(equivalent_impedance)
     return equivalent_impedance
 
 
-def main(): #master_alarm_puzzle():
+def main():
     pygame.init()
     screen = pygame.display.set_mode((900, 600))
 
@@ -149,6 +147,8 @@ def main(): #master_alarm_puzzle():
 
         # Delay for a small amount of time
         time.sleep(0.25)
+
+        # Update the display
         pygame.display.flip()
 
 if __name__ == '__main__':
