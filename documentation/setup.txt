@@ -1,7 +1,14 @@
+# Update the Beablebone Black
 sudo apt-get update
-sudo apt-get install cifs-utils build-essential python-dev python-setuptools python-pip python-smbus -y
-sudo apt-get install python-pygame
+
+# Install all necessary modules in one sweep
+sudo apt-get install cifs-utils build-essential python-dev python-setuptools python-pip python-smbus python-pygame -y
+
+# Edit the fstab file to gain access to the shared simulator folder. This line should be commented out before the system is shutdown.
+# It does not like to read this addition on boot.
 sudo nano /etc/fstab
 	append the file with:
-//192.168.0.17/simulator /home/debian/simulator cifs username=sjtry_000,password=[PASSWORD] 0 0
+//[IP ADDRESS]/simulator /home/debian/simulator cifs username=sjtry_000,password=[PASSWORD] 0 0
+
+# Mount the shared folder to the Beaglebone Black
 sudo mount -a

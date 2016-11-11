@@ -1,14 +1,17 @@
-# from Adafruit_I2C import Adafruit_I2C
-# import seven_segment_i2c
-# import time
-import rocket
+import sys
+import pygame
 
 
 def main():
-    # i2c = seven_segment_i2c.SevenSegmentDisplay(1, 0x71)
-    # i2c = Adafruit_I2C(0x71)
-    sls = rocket.load_rocket()
-    rocket.pre_launch(sls)
+    pygame.init()
+    screen = pygame.display.set_mode((900, 600))
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        pygame.display.flip()
 
 if __name__ == '__main__':
     main()
