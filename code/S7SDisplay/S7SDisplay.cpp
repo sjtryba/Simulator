@@ -7,10 +7,14 @@
 
 #include "Arduino.h"
 #include "Wire.h"
-#include "string.h"
+#include "String.h"
 #include "S7SDisplay.h"
 
-S7SDisplay::S7SDisplay(byte address){
+S7SDisplay::S7SDisplay(void){
+
+}
+
+void S7SDisplay::SetAddress(byte address){
 	_address = address;
 }
 
@@ -96,7 +100,7 @@ void S7SDisplay::WriteDigitToPosition(int position, byte digit){
 	WriteDigit(digit);
 }
 
-void S7SDisplay::WriteInt(int value){
+void S7SDisplay::WriteInt(int value, String fillChar = " "){
 	/*
 	Write an integer to the display.
 	fillChar will padd the number up to four digits.
@@ -109,11 +113,60 @@ void S7SDisplay::WriteInt(int value){
 	String fillStr = "";
 	
 	for(int i=0; i<digitsToFill; i++)
-		fillStr += String(" ");					// Create the proper length fill string
+		fillStr += fillChar;					// Create the proper length fill string
 	
 	String writeStr = fillStr + strValue;		// Combine the fill and value to make the final string
 	Wire.beginTransmission(_address);
 	for(int i = 0; i < 4; i++)
 		Wire.write(writeStr[i]);
 	Wire.endTransmission();
+}
+
+DoubleDisplay::DoubleDisplay(byte leftAddress, byte rightAddress){
+	/*
+	Double display class, made up of a left and right display.
+	*/
+	
+	_leftAddress = leftAddress;
+	_rightAddress = rightAddress;
+	
+	leftDisplay.SetAddress(leftAddress);
+	rightDisplay.SetAddress(rightAddress);
+}
+
+void DoubleDisplay::WriteInt(long value){
+	/*
+	Writes an integer of 8 or less characters to a double display.
+	A double display is made up of a left and right display.
+	*/
+	
+	String strValue = String(value);	// Convert the integer to a string
+	String fillChar = "0";
+	
+	//leftDisplay.ClearDisplay();
+	//rightDisplay.ClearDisplay();
+	// If the string is 4 characters or less, only disply on the right screen
+	if(strValue.length() <= 4){
+		leftDisplay.ClearDisplay();		// Clear the left screen
+		rightDisplay.WriteInt(value);	// Write to the right screen
+	}
+	
+	// If the string is between 4 and 8 characters, split the string
+	// and display it across both screens.
+	else if(4 < strValue.length() <= 8){
+		String left = strValue.substring(0, strValue.length() - 4);	// Left part of the string
+		String right = strValue.substring(strValue.length() - 4, strValue.length());	// Right part of the string
+		
+		leftDisplay.WriteInt(left.toInt());		// Write to the left screen
+		rightDisplay.WriteInt(right.toInt(), fillChar);	// Write to the right screen
+	}
+}
+
+void DoubleDisplay::ClearDisplay(){
+		/*
+	Clear the display
+	*/
+	
+	leftDisplay.WriteByte(0x76);
+	rightDisplay.WriteByte(0x76);
 }
