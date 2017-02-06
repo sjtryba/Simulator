@@ -1,7 +1,0 @@
-sudo apt-get update
-sudo apt-get install cifs-utils build-essential python-dev python-setuptools python-pip python-smbus -y
-sudo apt-get install python-pygame
-sudo nano /etc/fstab
-	append the file with:
-//192.168.0.17/simulator /home/debian/simulator cifs username=sjtry_000,password=[PASSWORD] 0 0
-sudo mount -a
